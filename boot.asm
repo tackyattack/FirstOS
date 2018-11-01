@@ -127,7 +127,7 @@ boot_p:
   mov gs, ax           ; still more extra data
 
   ;mov esp, stack_bottom ; move the stack pointer to the new spot
-  ; free space -- give it 65KB (grows down) 
+  ; free space -- give it 65KB (grows down)
   mov ebp, 0x10ffff
   mov esp , ebp
 
