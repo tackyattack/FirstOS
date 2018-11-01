@@ -1,7 +1,9 @@
 [BITS 16]
 ;this will now be implied by the linker
 ;org 0x7C00
-
+section .text
+global _start
+_start:
 boot:
   mov [BOOT_DRIVE_NUMBER], dl ; store the boot drive
 
