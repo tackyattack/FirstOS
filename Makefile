@@ -9,6 +9,7 @@ all: os.img
 # boot.o MUST come first
 os.img: boot.o interrupts.o kernel.o
 	$(LD) -o os.img -Ttext 0x7C00 $^ --oformat binary
+	python sector_pad.py os.img
 
 kernel.o: kernel.c
 	$(CC) -ffreestanding -c $< -o $@
