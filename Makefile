@@ -6,7 +6,7 @@ LD=i386-elf-ld
 all: os.img
 
 # link the objects
-#--oformat binary
+# boot.o MUST come first
 os.img: boot.o interrupts.o kernel.o
 	$(LD) -o os.img -Ttext 0x7C00 $^ --oformat binary
 

@@ -29,7 +29,34 @@ char key_map_OSX(char scancode)
     scancode = scancode - 44;
     ret = QWERTY[scancode + 19];
   }
+  else if(scancode == 57)
+  {
+    ret = 32; // space bar
+  }
+  else if(scancode == 14 || scancode == 15)
+  {
+    ret = 127; // delete
+  }
   return ret;
+}
+
+void textedit(char ascii_val)
+{
+  char *VGA_mem = (char*) 0xb8000;
+  static int text_pos = 0;
+  if((ascii_val >= 'a' && ascii_val <= 'z' || ascii_val == ' ')
+    && (text_pos < 80*25))
+  {
+    VGA_mem[text_pos*2] = ascii_val;
+    VGA_mem[text_pos*2 + 1] = 0x0A;
+    text_pos++;
+  }
+  else if(ascii_val == 127 && text_pos >= 0)
+  {
+    if(text_pos > 0) text_pos--;
+    VGA_mem[text_pos*2] = 0x00;
+    VGA_mem[text_pos*2 + 1] = 0x0A;
+  }
 }
 
 struct IDT_entry{
@@ -231,13 +258,11 @@ void irq0_handler(void)
 }
 
 void irq1_handler(void) {
-  char *VGA_mem = (char*) 0xb8000;
 
   char c = inb(0x60);
   if(c > 0)
   {
-    *VGA_mem = key_map_OSX(c);
-    *++VGA_mem = 0x0A;
+    textedit(key_map_OSX(c));
   }
 
   outb(0x20, 0x20); //EOI

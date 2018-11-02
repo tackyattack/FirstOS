@@ -13,6 +13,11 @@ boot:
   mov ax, 0x3 ; set VGA to text mode
   int 0x10    ; set palette register interrupt
 
+  ; make the cursor invisible
+  mov ah, 0x01
+  mov ch, 00100000b
+  int 0x10
+
   mov bx, boot_sector_end ; where to load the sectors
   mov dh, 15              ; number of sectors to read
   mov dl, [BOOT_DRIVE_NUMBER]
