@@ -91,6 +91,11 @@ gdt_descriptor:
 ; we want to use
 CODE_SEGMENT equ gdt_code - gdt_start
 DATA_SEGMENT equ gdt_data - gdt_start
+
+; make the constant visible to the kernel
+global KERNEL_CODE_SEGMENT_OFFSET
+KERNEL_CODE_SEGMENT_OFFSET:
+  dw CODE_SEGMENT
 ;-------------------------------------------------------------------------------
 
 BOOT_DRIVE_NUMBER:
@@ -125,6 +130,23 @@ dw 0xAA55             ; indicate boot sector
 boot_sector_end:
 
 [BITS 32]
+
+; functions for port IO
+global inb
+global outb
+inb:
+	mov edx, [esp + 4]
+  ; al is the lower 8 bits of eax
+  ; dx is the lower 16 bits of edx
+	in al, dx
+	ret
+
+outb:
+	mov   edx, [esp + 4]
+	mov   al, [esp + 4 + 4]
+	out   dx, al
+	ret
+
 boot_p:
   mov ax, DATA_SEGMENT ; update segment registers to the proper GDT selector
   mov ds, ax           ; data
