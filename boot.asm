@@ -132,16 +132,16 @@ boot_sector_end:
 [BITS 32]
 
 ; functions for port IO
-global inb
-global outb
-inb:
+global read_port
+global write_port
+read_port:
 	mov edx, [esp + 4]
   ; al is the lower 8 bits of eax
   ; dx is the lower 16 bits of edx
 	in al, dx
 	ret
 
-outb:
+write_port:
 	mov   edx, [esp + 4]
 	mov   al, [esp + 4 + 4]
 	out   dx, al

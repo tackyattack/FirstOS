@@ -1,5 +1,5 @@
-extern char inb(unsigned short port);
-extern void outb(unsigned short port, unsigned char data);
+extern char read_port(unsigned short port);
+extern void write_port(unsigned short port, unsigned char data);
 
 char QWERTY[] = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
                  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
@@ -94,32 +94,32 @@ void idt_init(void)
 
   // ICW1: init
   // PIC1 and PIC2 now expect three more ICWs
-  outb(0x20, 0x11);
-  outb(0xA0, 0x11);
+  write_port(0x20, 0x11);
+  write_port(0xA0, 0x11);
 
   // ICW2: vector offset
   // remap offset addr of IDT
   // (must be beyond first 32 since Intel reserves those)
-  outb(0x21, 0x20);
-  outb(0xA1, 0x28);
+  write_port(0x21, 0x20);
+  write_port(0xA1, 0x28);
 
   // ICW3: how the PICs are wired as master/slave
   // cascading -- set to 0 since we don't need this
-	outb(0x21 , 0x00);
-	outb(0xA1 , 0x00);
+	write_port(0x21 , 0x00);
+	write_port(0xA1 , 0x00);
 
 	// ICW4: information about environment
   // set lower bits to tell them to run in 80x86 mode
-	outb(0x21 , 0x01);
-	outb(0xA1 , 0x01);
+	write_port(0x21 , 0x01);
+	write_port(0xA1 , 0x01);
 
   // end of init
 
 	// mask interrupts
   // setting a bit disables IRQ
   // turn them all off for now
-	outb(0x21 , 0xff);
-	outb(0xA1 , 0xff);
+	write_port(0x21 , 0xff);
+	write_port(0xA1 , 0xff);
 
 	irq1_address = (unsigned long)irq1;
 	IDT[33].offset_lowerbits = irq1_address & 0xffff;
@@ -136,19 +136,19 @@ void idt_init(void)
 	load_idt(idt_ptr);
 
   // 0xFD is 11111101 - enables only IRQ1 -- which is the keyboard
-	outb(0x21 , 0xFD);
+	write_port(0x21 , 0xFD);
 
 }
 
 void irq1_handler(void) {
 
-  char c = inb(0x60);
+  char c = read_port(0x60);
   if(c > 0)
   {
     textedit(key_map_OSX(c));
   }
 
-  outb(0x20, 0x20); //EOI
+  write_port(0x20, 0x20); //EOI
 }
 
 extern void kernel_main()
