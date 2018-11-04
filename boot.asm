@@ -7,8 +7,8 @@ _start:
 boot:
   mov [BOOT_DRIVE_NUMBER], dl ; store the boot drive
 
-  ;mov ax, 0x2401 do we actually need A20?
-  ;int 0x15
+  mov ax, 0x2401 ; enable address line 20 just incase it isn't by default
+  int 0x15
 
   mov ax, 0x3 ; set VGA to text mode
   int 0x10    ; set palette register interrupt
@@ -130,22 +130,6 @@ dw 0xAA55             ; indicate boot sector
 boot_sector_end:
 
 [BITS 32]
-
-; functions for port IO
-global read_port
-global write_port
-read_port:
-	mov edx, [esp + 4]
-  ; al is the lower 8 bits of eax
-  ; dx is the lower 16 bits of edx
-	in al, dx
-	ret
-
-write_port:
-	mov   edx, [esp + 4]
-	mov   al, [esp + 4 + 4]
-	out   dx, al
-	ret
 
 boot_p:
   mov ax, DATA_SEGMENT ; update segment registers to the proper GDT selector
